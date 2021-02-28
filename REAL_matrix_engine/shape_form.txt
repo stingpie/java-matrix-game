@@ -1,0 +1,51 @@
+[name: pike] // shape_form 0
+[spike: 10 ]
+[scale: 1]
+[spike_num: 1]
+[intricate: 0]
+[cavity:0]
+[form: 0]
+&
+[name: plank_floor]		// shape_form 1
+[spike:0]
+[scale:1]
+[intricate:1]
+[cavity:0]
+[form:1]
+&
+[name: plate_floor]		// shape_form 2
+[spike:0]
+[scale:1]
+[intricate:0]
+[cavity:0]
+[form:1]
+&
+[name: arm] //shape form 3
+[spike: 1]
+[scale: 1]
+[intricate: 1]
+[cavity: 0]
+[form: 2 ]
+&
+[name: leg] // shape form 4
+[spike: 1]
+[scale: 1]
+[intricate: 1]
+[cavity: 0]
+[form: 2 ]
+&
+[name: torso] // shape form 5
+[spike: 0]
+[scale: 1]
+[intricate: 0]
+[cavity: 1] 
+[form: 3 ]
+&
+[name: head] // shape form 6
+[spike: 1]
+[scale: 1]
+[intricate: 1]
+[cavity: 8] 
+[form: 4 ]
+
+

@@ -1,0 +1,44 @@
+[name: pike] // form 0
+[primitive_cone: true]
+[primitive_cylinder: true]
+[primitive_cube: false]
+[primitive_sphere: false]
+[primitive_x: 10]
+[primitive_y:2 ]
+[primitive_z:1 ]
+&
+[name: floor]	// form 1
+[primitive_cone: false]
+[primitive_cylinder: false]
+[primitive_cube: true]
+[primitive_sphere: false]
+[primitive_x: 10]
+[primitive_y:10 ]
+[primitive_z:1 ]
+&
+[name: arm]		// form 2
+[primitive_cone: false]
+[primitive_cylinder: true]
+[primitive_cube: false]
+[primitive_sphere: true]
+[primitive_x: 10]
+[primitive_y:20 ]
+[primitive_z:1 ]
+&
+[name: torso]		// form 3
+[primitive_cone: false]
+[primitive_cylinder: false]
+[primitive_cube: false]
+[primitive_sphere: true]
+[primitive_x: 50]
+[primitive_y:50 ]
+[primitive_z:1 ]
+&
+[name: head]		// form 4
+[primitive_cone: false]
+[primitive_cylinder: false]
+[primitive_cube: false]
+[primitive_sphere: true]
+[primitive_x: 15]
+[primitive_y: 15 ]
+[primitive_z:1 ]

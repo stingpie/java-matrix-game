@@ -1,0 +1,91 @@
+
+[name: carboard ]     // mat 0    
+[melt_temp:  100000]
+[boil_temp:  10457]
+[elastic:  5]
+[plastic:  30]
+[density:  2]
+[pourosity :  0.9]
+[composite  :false]
+&
+[name: metal ]  		//mat 1
+[melt_temp:  10800]
+[boil_temp:  12000]
+[elastic:  15]
+[plastic:  60]
+[density:  6]
+[pourosity :  0]
+[composite  :false]
+&
+[name: wood ]      		// mat 2
+[melt_temp:  100000]
+[boil_temp:  10400]
+[elastic:  15]
+[plastic:  45]
+[density:  18]
+[pourosity :  0.1]
+[composite  :false]
+&
+[name: water]			// mat3 
+[melt_temp:10032 ]
+[boil_temp:10212 ]
+[elastic: 5]
+[plastic: 20]
+[density: 20]
+[pourosity:0.02]
+[composite: false]
+&
+[name: leather]			// mat 4
+[melt_temp:14400 ]
+[boil_temp:10600 ]
+[elastic: 2]
+[plastic: 60]
+[density: 20]
+[pourosity:0.2]
+[composite: false]
+&
+[name: muscle] 			// mat 5
+[melt_temp:12400 ]
+[boil_temp:10450 ]
+[elastic: 2]
+[plastic: 60]
+[density: 18]
+[pourosity:0.01]
+[composite: false]
+&
+[name: fat]				// mat 6
+[melt_temp:10114 ]
+[boil_temp:10450 ]
+[elastic: 1]
+[plastic: 60]
+[density: 19]
+[pourosity:0.01]
+[composite: false]
+&
+[name: nerves]			// mat 7
+[melt_temp:10120 ]
+[boil_temp:10450 ]
+[elastic: 1]
+[plastic: 60]
+[density: 19]
+[pourosity:0.015]
+[composite: false]
+&
+[name: bones]			// mat 8
+[melt_temp:11400 ]
+[boil_temp:12950 ]
+[elastic: 20]
+[plastic: 60]
+[density: 15]
+[pourosity:0.05]
+[composite: false]
+&
+[name: flesh]		// mat 9
+[composite: 5,6,7,8 ]
+&
+[name: brain_tissue] // mat 10
+[composite: 7,7,9]
+
+
+
+
