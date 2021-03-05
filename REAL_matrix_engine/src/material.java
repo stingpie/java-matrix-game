@@ -15,10 +15,19 @@ public class material {
 	private int density=10;
 	private float pourosity=0; //how much liquid the material can absorb (0 - 1)
 	private material[] composite= new material[1];  // what this meta-material is built out of. 
+	private char[] RGB= {255,255,255};
 	
 	
 	
 	
+	public char[] get_RGB() {
+		return RGB;
+	}
+
+	public void set_RGB(char[] rGB) {
+		RGB = rGB;
+	}
+
 	public material() {
 		//composite[0]= new material(false);
 	}
@@ -39,6 +48,7 @@ public class material {
 		density=new_material.get_density();
 		pourosity=new_material.get_pourosity();
 		composite=new_material.get_composite();
+		RGB=new_material.get_RGB();
 	}
 	
 	
@@ -78,6 +88,9 @@ public class material {
 			plastic += composite[i].get_plastic();
 			density += composite[i].get_density();
 			pourosity += composite[i].get_pourosity();
+			for(int j=0; j<3;j++) {
+				RGB[j]+=composite[i].get_RGB()[j];
+			}
 		}
 
 			melting_temp/=composite.length-1;
@@ -86,6 +99,9 @@ public class material {
 			plastic/=composite.length-1;
 			density/=composite.length-1;
 			pourosity/=composite.length-1;
+			for(int j=0; j<3;j++) {
+				RGB[j]=(char)Math.min(RGB[j]/composite.length,255);
+			}
 		
 	}
 	
@@ -218,6 +234,11 @@ public class material {
 					
 				}
 				break;
+				case "R":RGB[0] = (char)Integer.parseInt(data[i].substring(z+1,data[i].length()-1)); break;
+				case "G":RGB[1] = (char)Integer.parseInt(data[i].substring(z+1,data[i].length()-1)); break;
+				case "B":RGB[2] = (char)Integer.parseInt(data[i].substring(z+1,data[i].length()-1)); break;
+				
+				
 				}
 			}
 		}

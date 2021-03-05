@@ -19,7 +19,9 @@ public class item {
 	private char graphic=' ';	// what graphic should be displayed while looking at this item. 
 	private item[] aggregate= new item[1]; // aggregates multiple items into a single item
 	private boolean priority=false;
-	
+	private String state="solid";
+	private char damage=0;
+	public boolean destroyed=false;
 	
 	public item() {
 		ID=(long)(Math.random()*2147483647);
@@ -34,7 +36,8 @@ public class item {
 		String b = z[index];
 		
 		string_load(b.split("PUT_SPACE_HERE"));
-		
+		 
+		calc_weight();
 		
 	}
 	
@@ -50,18 +53,21 @@ public class item {
 			mat.change_density(-9);
 			mat.change_elastic(-10);
 			calc_weight();
-			graphic='#';
+			state="gas";
+			graphic='░';
 		}else if (temp > mat.get_melting_temp()) {
 			//System.out.println(temp);
 			if(! form.puddle) {
 				form.make_puddle(); // turn into puddle
+				
 			}
 			mat.change_density(2);
 			mat.change_elastic(-10);
 			calc_weight();
 			graphic='O';
+			state="liquid";
 			
-		}else {mat.change_elastic(0); mat.change_density(0); calc_weight(); if(form.puddle){ graphic='*';  } }
+		}else {mat.change_elastic(0); mat.change_density(0); calc_weight(); if(form.puddle){ graphic='*'; state="solid"; } }
 	}
 	
 	public void aggregate_item(item new_item) { // adds a new material to the aggregate
@@ -71,6 +77,7 @@ public class item {
 			get_aggregate()[0]=new item();
 			
 		}
+		
 		set_aggregate(Arrays.copyOf(get_aggregate(), get_aggregate().length+1));
 		get_aggregate()[get_aggregate().length-1]=new_item;
 		
@@ -85,6 +92,9 @@ public class item {
 			
 			aggregate_weight+=get_aggregate()[i].get_weight();
 			aggregate_volume+=get_aggregate()[i].get_form().get_basic_form().get_volume();
+			
+			
+			
 		}
 		
 		shape new_form = new shape();
@@ -96,6 +106,9 @@ public class item {
 		get_form().get_basic_form().set_primitives(true, false, false, false);
 		get_form().get_basic_form().set_size(Math.cbrt(aggregate_volume), Math.cbrt(aggregate_volume), Math.cbrt(aggregate_volume));
 			
+		//System.out.println(mat);
+		
+		mat.blend_material(new_item.get_material());
 		
 	}
 	
@@ -106,14 +119,20 @@ public class item {
 		//System.out.println((form.get_spikenum()*100) / (form.basic_form.get_surface()/2));
 		
 		if(random < (form.get_spikenum()*100) / (form.basic_form.get_surface()/2)) { // if hitting another creature, test to see of a spike hit them. 
-			//System.out.println("spike!");
+			
+			
 			return (int)(force * (form.get_spikeness()+1) * weight);  // calculate the damage of a spike 
 			
 		}
-		//System.out.println("no spike!");
+		
 		return (int) (force*weight); // calculate bludgeon damage
 		
 	}
+	
+	
+	
+	
+	
 	public int accidental_attack_dmg(int force) {  // not useful right now. It's mostly just for testing form & mat. 
 		System.out.println((form.get_spikenum()*100) / (form.basic_form.get_surface()));
 		
@@ -213,6 +232,7 @@ public class item {
 	}
 	
 	public void string_load(String[] data) throws Exception{
+		mat=  new material();
 		for(int i=0; i<data.length;i++) {
 			data[i]=data[i].replaceAll("\\s", "");
 			//System.out.println(data[i]);
@@ -274,6 +294,54 @@ public class item {
 	public void set_aggregate(item[] aggregate) {
 		this.aggregate = aggregate;
 	}
+
+
+	public String get_state() {
+		return state;
+	}
+			
+	public void apply_damage(int damage_to_apply) {
+		if(aggregate.length<=1) {
+			
+			if(damage_to_apply>mat.get_elastic()) {
+				double z=damage+Math.pow((Math.pow(damage_to_apply,0.1)-mat.get_elastic()),2);
+				//System.out.println(z);
+				if(z<255) {
+					damage=(char)z;
+				} else {
+					damage=(char)255;
+					destroyed=true;
+					form = new shape_form(); 
+				}
+			}
+		}else {
+			
+			
+			
+			int z =(int)(Math.random()*(aggregate.length));
+			//System.out.println(z);
+			aggregate[z].apply_damage(damage_to_apply);
+			System.out.println();
+			System.out.println(z);
+			System.out.println(aggregate[z].get_material().get_elastic());
+			
+			
+			int running_damage=0;
+			
+			for(int i=0; i<aggregate.length-1; i++) {
+				running_damage+=aggregate[i].get_damage();
 				
+			}
+			running_damage /= aggregate.length-1;
+			
+			damage=(char)running_damage;
+			
+		}
+		
+	}
+	
+	public int get_damage() {
+		return (int)  damage;
+	}
 	
 }

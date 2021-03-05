@@ -7,6 +7,9 @@
 [density:  2]
 [pourosity :  0.9]
 [composite  :false]
+[R : 165 ]
+[G : 42 ]
+[B : 42 ]
 &
 [name: metal ]  		//mat 1
 [melt_temp:  10800]
@@ -16,6 +19,9 @@
 [density:  6]
 [pourosity :  0]
 [composite  :false]
+[R : 168 ]
+[G : 168 ]
+[B : 168 ]
 &
 [name: wood ]      		// mat 2
 [melt_temp:  100000]
@@ -25,6 +31,9 @@
 [density:  18]
 [pourosity :  0.1]
 [composite  :false]
+[R : 175 ]
+[G : 68 ]
+[B : 62 ]
 &
 [name: water]			// mat3 
 [melt_temp:10032 ]
@@ -34,6 +43,9 @@
 [density: 20]
 [pourosity:0.02]
 [composite: false]
+[R : 130 ]
+[G : 180 ]
+[B : 220 ]
 &
 [name: leather]			// mat 4
 [melt_temp:14400 ]
@@ -43,6 +55,9 @@
 [density: 20]
 [pourosity:0.2]
 [composite: false]
+[R : 182 ]
+[G : 62 ]
+[B : 42 ]
 &
 [name: muscle] 			// mat 5
 [melt_temp:12400 ]
@@ -52,6 +67,9 @@
 [density: 18]
 [pourosity:0.01]
 [composite: false]
+[R : 255 ]
+[G : 229 ]
+[B : 165 ]
 &
 [name: fat]				// mat 6
 [melt_temp:10114 ]
@@ -61,6 +79,9 @@
 [density: 19]
 [pourosity:0.01]
 [composite: false]
+[R : 255 ]
+[G : 229 ]
+[B : 165 ]
 &
 [name: nerves]			// mat 7
 [melt_temp:10120 ]
@@ -70,6 +91,9 @@
 [density: 19]
 [pourosity:0.015]
 [composite: false]
+[R : 255 ]
+[G : 229 ]
+[B : 165 ]
 &
 [name: bones]			// mat 8
 [melt_temp:11400 ]
@@ -79,6 +103,9 @@
 [density: 15]
 [pourosity:0.05]
 [composite: false]
+[R : 240 ]
+[G : 240 ]
+[B : 240 ]
 &
 [name: flesh]		// mat 9
 [composite: 5,6,7,8 ]
