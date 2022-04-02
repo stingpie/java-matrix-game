@@ -1,6 +1,7 @@
 
+
 public class material_effect extends material { // a class that modifies the values from a material.
-	
+	//bopodoop
 	public int mt_mod=0;
 	public int bt_mod=0;
 	public int el_mod=0;

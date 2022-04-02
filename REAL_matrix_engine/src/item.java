@@ -12,21 +12,30 @@ public class item {
 	// has a bunch of modifiable properties, it's really intended to be complicated. 
 	
 	private shape_form form; 	// form defines the structural properties of the item.
-	private material mat; 		// mat defines the material properties of the item. 
+	//private material mat; 		// mat defines the material properties of the item. 
+	private int mat_key;
 	private int temp=10000;
-	private long ID; 			// unused. Maybe it'll be useful later? 
-	double weight =0;			// calculated by recalculate. density times volume
+	//private long ID; 			// unused. Maybe it'll be useful later? 
+	double weight =-1;			// calculated by recalculate. density times volume
 	private char graphic=' ';	// what graphic should be displayed while looking at this item. 
 	private item[] aggregate= new item[1]; // aggregates multiple items into a single item
 	private boolean priority=false;
 	private String state="solid";
 	private char damage=0;
 	public boolean destroyed=false;
+	private int push_size=0; // the amount of force required to push this object
+	
+	
 	
 	public item() {
-		ID=(long)(Math.random()*2147483647);
 		form = new shape_form();
-		mat = new material();
+		mat_key=0;
+	}
+	
+	public item(int material_key) {
+		//ID=(long)(Math.random()*2147483647);
+		form = new shape_form();
+		mat_key=material_key;
 		
 	}
 	
@@ -38,36 +47,39 @@ public class item {
 		string_load(b.split("PUT_SPACE_HERE"));
 		 
 		calc_weight();
+		push_size=(int)(Math.max(form.get_basic_form().get_volume()-10000,0)*weight);
 		
 	}
 	
-	public item(shape_form new_form, material new_mat) {
-		ID=(long)Math.random();
+	public item(shape_form new_form) {
+		//ID=(long)Math.random();
 		form=new_form;
-		mat=new_mat;
-		weight = form.basic_form.get_volume() * mat.get_density();
+		//mat=new_mat;
+		mat_key=0;
+		weight = form.basic_form.get_volume() * matrix_engine.material_list.get_material(mat_key).get_density();
+		push_size=(int)(Math.max(form.get_basic_form().get_volume()-10000,0)*weight);
 	}
 	
 	public void temp_change() { // change the temperature, but also change the graphic. 
-		if(temp > mat.get_boiling_temp()) {
-			mat.change_density(-9);
-			mat.change_elastic(-10);
+		if(temp > matrix_engine.material_list.get_material(mat_key).get_boiling_temp()) {
+			matrix_engine.material_list.get_material(mat_key).change_density(-9);
+			matrix_engine.material_list.get_material(mat_key).change_elastic(-10);
 			calc_weight();
 			state="gas";
 			graphic='░';
-		}else if (temp > mat.get_melting_temp()) {
+		}else if (temp > matrix_engine.material_list.get_material(mat_key).get_melting_temp()) {
 			//System.out.println(temp);
 			if(! form.puddle) {
 				form.make_puddle(); // turn into puddle
 				
 			}
-			mat.change_density(2);
-			mat.change_elastic(-10);
+			matrix_engine.material_list.get_material(mat_key).change_density(2);
+			matrix_engine.material_list.get_material(mat_key).change_elastic(-10);
 			calc_weight();
 			graphic='O';
 			state="liquid";
 			
-		}else {mat.change_elastic(0); mat.change_density(0); calc_weight(); if(form.puddle){ graphic='*'; state="solid"; } }
+		}else {matrix_engine.material_list.get_material(mat_key).change_elastic(0); matrix_engine.material_list.get_material(mat_key).change_density(0); calc_weight(); if(form.puddle){ graphic='*'; state="solid"; } }
 	}
 	
 	public void aggregate_item(item new_item) { // adds a new material to the aggregate
@@ -108,13 +120,14 @@ public class item {
 			
 		//System.out.println(mat);
 		
-		mat.blend_material(new_item.get_material());
+		matrix_engine.material_list.get_material(mat_key).blend_material(matrix_engine.material_list.get_material(new_item.get_material()));
+		push_size=(int)(Math.max(form.get_basic_form().get_volume()-10000,0)*weight);
 		
 	}
 	
 	
-	public int deliberate_attack_dmg(int force) { // not useful right now. It's mostly just for testing form & mat. 
-		int random=(int)(Math.random()*100);
+	public int deliberate_attack_dmg(int force) { // not useful right now. It's mostly just for testing form & matrix_engine.material_list.get_material(mat_key). 
+		int random=0;//(int)(Math.random()*100);
 		//System.out.println(random);
 		//System.out.println((form.get_spikenum()*100) / (form.basic_form.get_surface()/2));
 		
@@ -133,42 +146,43 @@ public class item {
 	
 	
 	
-	public int accidental_attack_dmg(int force) {  // not useful right now. It's mostly just for testing form & mat. 
-		System.out.println((form.get_spikenum()*100) / (form.basic_form.get_surface()));
+	public int accidental_attack_dmg(int force) {  // not useful right now. It's mostly just for testing form & matrix_engine.material_list.get_material(mat_key). 
+		//System.out.println((form.get_spikenum()*100) / (form.basic_form.get_surface()));
 		
 		if((int)(Math.random()*100) <(form.get_spikenum()*100) / (form.basic_form.get_surface())) { // if hitting another creature, test to see of a spike hit them. 
-			System.out.println("spike!");
+			//System.out.println("spike!");
 			return (int)(force * (form.get_spikeness()+1) * weight);  // calculate the damage of a spike 
 		}
-		System.out.println("no spike!");
+		//System.out.println("no spike!");
 		return (int) (force*weight); // calculate bludgeon damage
 	}
 	
 	public void set_form(shape_form new_form) {
 		form=new_form;
-		weight = form.basic_form.get_volume() * mat.get_density();
+		weight = form.basic_form.get_volume() * matrix_engine.material_list.get_material(mat_key).get_density();
 	}
 	
 	public void set_new_form(shape_form new_form) {
 		form=new_form;
-		//weight = form.basic_form.get_volume() * mat.get_density();
+		//weight = form.basic_form.get_volume() * matrix_engine.material_list.get_material(mat_key).get_density();
 	}
 	
 	public void calc_weight() {
-		weight = form.basic_form.get_volume() * mat.get_density();
+		//System.out.println(mat_key);
+		weight = form.basic_form.get_volume() * matrix_engine.material_list.get_material(mat_key).get_density();
 	}
 	
-	public void set_material(material new_material) {
-		mat=new_material;
-		weight = form.basic_form.get_volume() * mat.get_density();
+	public void set_material(int material_key) {
+		mat_key=material_key;
+		weight = form.basic_form.get_volume() * matrix_engine.material_list.get_material(mat_key).get_density();
 	}
 	
 	public shape_form get_form() {
 		return form;
 	}
 	
-	public material get_material() {
-		return mat;
+	public int get_material() {
+		return mat_key;
 	}
 	
 	public double get_weight() {
@@ -176,7 +190,7 @@ public class item {
 	}
 	
 	public void recalculate() { // redo the temperature calculations
-		weight = form.basic_form.get_volume() * mat.get_density();
+		weight = form.basic_form.get_volume() * matrix_engine.material_list.get_material(mat_key).get_density();
 		
 	}
 	public int get_temp() {
@@ -191,9 +205,9 @@ public class item {
 	}
 	
 	
-	public long get_ID() {
-		return ID;
-	}
+//	public long get_ID() {
+//		return ID;
+//	}
 	public char get_graphic() {
 		return graphic;
 	}
@@ -203,10 +217,12 @@ public class item {
 	
 	public void random() { // randomly configure this item. 
 		form.random();
-		mat.random();
+		matrix_engine.material_list.get_material(mat_key).random();
 		graphic=(char)(Math.random()*95 +32); // range for normal, non-whitespace ascii
 		temp=(int)(Math.random()*10000+5000); 
 	}
+	
+	
 	
 	
 	public String[] loader(String name) throws Exception {
@@ -232,14 +248,14 @@ public class item {
 	}
 	
 	public void string_load(String[] data) throws Exception{
-		mat=  new material();
+		//mat=  new material();
 		for(int i=0; i<data.length;i++) {
 			data[i]=data[i].replaceAll("\\s", "");
 			//System.out.println(data[i]);
 			if(data[i].indexOf(':')>=0) {
 				int z=data[i].indexOf(':');
 				switch (data[i].substring(1,z)) {
-				case "mat": mat= new material("materials.txt", Integer.parseInt(data[i].substring(z+1,data[i].length()-1))); 		break;
+				case "mat": mat_key= Integer.parseInt(data[i].substring(z+1,data[i].length()-1)); 		break;
 				case "form" : form= new shape_form("shape_form.txt",Integer.parseInt(data[i].substring(z+1,data[i].length()-1)) ); 	break;
 				case "temp" : temp=Integer.parseInt(data[i].substring(z+1,data[i].length()-1)); break;
 				case "graphic": graphic=(char)((data[i].substring(z+1,data[i].length()-1)).toCharArray())[0]; break;
@@ -278,7 +294,7 @@ public class item {
 	public item copy() { // make a duplicate of this item. 
 		item new_item= new item();
 		new_item.set_form(form.copy());
-		new_item.set_material(mat);
+		new_item.set_material(mat_key);
 		new_item.set_temp(temp);
 		new_item.set_graphic(graphic);
 		return new_item;
@@ -303,8 +319,8 @@ public class item {
 	public void apply_damage(int damage_to_apply) {
 		if(aggregate.length<=1) {
 			
-			if(damage_to_apply>mat.get_elastic()) {
-				double z=damage+Math.pow((Math.pow(damage_to_apply,0.1)-mat.get_elastic()),2);
+			if(damage_to_apply>matrix_engine.material_list.get_material(mat_key).get_elastic()) {
+				double z=damage+Math.pow((Math.pow(damage_to_apply,0.1)-matrix_engine.material_list.get_material(mat_key).get_elastic()),2);
 				//System.out.println(z);
 				if(z<255) {
 					damage=(char)z;
@@ -318,12 +334,10 @@ public class item {
 			
 			
 			
-			int z =(int)(Math.random()*(aggregate.length));
+			int z =(int)(/*Math.random()*/ 0.8*(aggregate.length));
 			//System.out.println(z);
 			aggregate[z].apply_damage(damage_to_apply);
-			System.out.println();
-			System.out.println(z);
-			System.out.println(aggregate[z].get_material().get_elastic());
+			
 			
 			
 			int running_damage=0;
@@ -343,5 +357,18 @@ public class item {
 	public int get_damage() {
 		return (int)  damage;
 	}
+
+
+	public int get_push_size() {
+		return push_size;
+	}
+
+
+	public void set_push_size(char size) {
+		this.push_size = size;
+	}
+
+
+
 	
 }

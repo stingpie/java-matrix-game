@@ -8,7 +8,35 @@ public class tile {
 	private item[] stack= {};
 	private boolean sorted=false;
 	private char priority_graphic=0;
+	//private item[] big_items;  // array containing references to large but pushable objects. 
+	private int max_push;
+	//
+//	public item[] get_big_items() {
+//		return big_items;
+//	}
+//
+//
+//	public void set_big_items(item[] big_items) {
+//		this.big_items = big_items;
+//		
+//		
+//	}
+
 	
+	public item get_hot_item() {
+		return stack[stack.length-1];
+	}
+	
+	public int get_max_push() {
+		return max_push;
+	}
+
+
+	public void set_max_push(int max_push) {
+		this.max_push = max_push;
+	}
+
+
 	//private effect[] area_effects= {null}; //not yet implemented. AoE effects should  modify items in the stack. 
 	public tile(){
 		
@@ -21,6 +49,11 @@ public class tile {
 		
 	}
 	
+	public void clear_stack() {
+		stack= new item[0];
+	}
+	
+	
 	
 	public void temp_sort() { // sorts all the items by their temperature, so I can have an easier time of distributing the temperatures. 
 		
@@ -30,31 +63,32 @@ public class tile {
 	}
 	
 	
-	public void temp_exchange() { // looks at the hottest item, and tries to distribute it's temperature to the other items in the stack. 
+	public void temp_exchange(item[] temp_stack) { // looks at the hottest item, and tries to distribute it's temperature to the other items in the stack. 
 		
 		
-		if (stack.length>1) {
+		if (temp_stack.length>1) {
 			
 			if(! sorted) {
 				temp_sort();
 			}
 			
-			float temp_exchange=(float)0.3; // the speed of temperature transmission
-			int temp_dif=(stack[stack.length-1].get_temp()-stack[0].get_temp());
-			int temp_spread=temp_dif/(stack.length); // the difference in temperature, divided by the number of objects
-			for(int i=0; i<stack.length-1;i++) {
-				stack[i].set_temp((int)(stack[i].get_temp()+temp_spread*temp_exchange)); // add the temperature to each item
-				stack[i].temp_change();
+			float temp_exchange=(float)matrix_engine.material_list.get_material(temp_stack[temp_stack.length-1].get_material()).get_tconduct(); // the speed of temperature transmission
+			int temp_dif=(temp_stack[temp_stack.length-1].get_temp()-temp_stack[0].get_temp());
+			int temp_spread=temp_dif/(temp_stack.length); // the difference in temperature, divided by the number of objects
+			for(int i=0; i<temp_stack.length-1;i++) {
+				
+				temp_stack[i].set_temp((int)(temp_stack[i].get_temp()+temp_spread*temp_exchange)); // add the temperature to each item
+				temp_stack[i].temp_change();
 			}
-			stack[stack.length-1].set_temp((int)(stack[stack.length-1].get_temp()-(temp_spread*(stack.length-1))*temp_exchange));
-			stack[stack.length-1].temp_change();
+			temp_stack[temp_stack.length-1].set_temp((int)(temp_stack[temp_stack.length-1].get_temp()-(temp_spread*(temp_stack.length-1))*temp_exchange));
+			temp_stack[temp_stack.length-1].temp_change();
 			
-			if(stack[stack.length-1].get_temp()<stack[stack.length-2].get_temp()) {
+			if(temp_stack[temp_stack.length-1].get_temp()<temp_stack[temp_stack.length-2].get_temp()) {
 				sorted=false;
 			}
 			
-		}else if(stack.length==1) {
-			stack[0].temp_change();
+		}else if(temp_stack.length==1) {
+			temp_stack[0].temp_change();
 		}
 	}
 	
@@ -95,11 +129,57 @@ public class tile {
 	public void add_item(item new_item) {
 		stack = Arrays.copyOf(stack, stack.length+1);
 		stack[stack.length-1]=new_item;
-		quickSort(stack, 0, stack.length-1);
-		sorted=false;
-		if(new_item.is_priority()) {set_Priority_graphic(new_item.get_graphic());}
+		
+		if(new_item.get_form().get_basic_form().get_volume()>1000 && new_item.get_push_size()>1000) { 
+//			if(big_items==null) {
+//				big_items=new item[1];
+//				
+//			}else {
+//				big_items = Arrays.copyOf(big_items, big_items.length+1);
+//			}
+//			big_items[big_items.length-1]=new_item;
+			max_push=Math.max(new_item.get_push_size(), max_push);
+			
+			//quickSort(big_items, 0,big_items.length-1);
+			
+			if(new_item.is_priority()) {set_Priority_graphic(new_item.get_graphic());}
+		}else {
+			stack = Arrays.copyOf(stack, stack.length+1);
+			stack[stack.length-1]=new_item;
+			
+			quickSort(stack, 0, stack.length-1);
+			
+			if(new_item.is_priority()) {set_Priority_graphic(new_item.get_graphic());}
+		}
+		
+		
+		
 		
 	}
+	
+	public void add_item(item[] new_item) {
+		for(int i=0; i<new_item.length;i++) {
+			stack = Arrays.copyOf(stack, stack.length+1);
+			stack[stack.length-1]=new_item[i];
+			
+//			if(new_item[i]!= null && new_item[i].is_big()) { 
+//				if(big_items==null) {
+//					big_items=new item[1];
+//				}else {
+//					big_items = Arrays.copyOf(big_items, big_items.length+1);
+//				}
+//				big_items[big_items.length-1]=new_item[i];
+//			}
+			
+			quickSort(stack, 0, stack.length-1);
+			//sorted=false;
+			if(new_item[i].is_priority()) {set_Priority_graphic(new_item[i].get_graphic());}
+			
+		}
+		
+	}
+	
+	
 	
 	public item[] get_stack() {
 		return stack;
@@ -108,6 +188,18 @@ public class tile {
 	public void set_stack(item[] new_stack) {
 		this.stack=new_stack;
 	}
+	
+	public item pop(int index) {
+		item  output= stack[index];
+		
+		//item[] second_half_of_stack=Arrays.copyOfRange(stack,index, stack.length);
+		
+		System.arraycopy(stack, index+1, stack, index, stack.length-index-1);
+		
+		return output;
+		
+	}
+	
 	
 	public void random(int num_of_items) { // makes a tile with completely random items
 		stack = new item[num_of_items];
@@ -142,5 +234,15 @@ public class tile {
 	public void set_Priority_graphic(char priority_graphic) {
 		this.priority_graphic = priority_graphic;
 	}
+
+
+//	public boolean is_big() {
+//		return big;
+//	}
+//
+//
+//	public void set_big(boolean big) {
+//		this.big = big;
+//	}
 	
 }

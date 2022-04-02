@@ -8,14 +8,15 @@ import java.util.Arrays;
 
 
 public class material {
-	private int melting_temp=10200;
-	private int boiling_temp=10500;
-	private int elastic=10;
-	private int plastic=10;
-	private int density=10;
-	private float pourosity=0; //how much liquid the material can absorb (0 - 1)
-	private material[] composite= new material[1];  // what this meta-material is built out of. 
-	private char[] RGB= {255,255,255};
+	int melting_temp=10200;
+	int boiling_temp=10500;
+	int elastic=10;
+	int plastic=10;
+	int density=10;
+	float tconduct=(float)0.5;
+	float pourosity=0; //how much liquid the material can absorb (0 - 1)
+	material[] composite= new material[1];  // what this meta-material is built out of. 
+	char[] RGB= {255,255,255};
 	
 	
 	
@@ -26,6 +27,14 @@ public class material {
 
 	public void set_RGB(char[] rGB) {
 		RGB = rGB;
+	}
+	
+	public float get_tconduct() {
+		return tconduct;
+	}
+	
+	public void set_tconduct(float new_tconduct) {
+		tconduct=new_tconduct;
 	}
 
 	public material() {
@@ -48,6 +57,7 @@ public class material {
 		density=new_material.get_density();
 		pourosity=new_material.get_pourosity();
 		composite=new_material.get_composite();
+		tconduct=new_material.get_tconduct();
 		RGB=new_material.get_RGB();
 	}
 	
@@ -81,12 +91,14 @@ public class material {
 		plastic=0;
 		density=0;
 		pourosity=0;
+		tconduct=0;
 		for(int i=0; i<composite.length; i++) {  // set the properties of this meta-material to be the average of it's components
 			melting_temp+=composite[i].get_melting_temp();
 			boiling_temp+=composite[i].get_boiling_temp();
 			elastic += composite[i].get_elastic();
 			plastic += composite[i].get_plastic();
 			density += composite[i].get_density();
+			tconduct=Math.max(tconduct,composite[i].get_tconduct()); // maximum thermal conductivity of each portion
 			pourosity += composite[i].get_pourosity();
 			for(int j=0; j<3;j++) {
 				RGB[j]+=composite[i].get_RGB()[j];
@@ -154,6 +166,7 @@ public class material {
 		elastic=(int)(Math.random()*200);
 		plastic=(int)(Math.random()*200);
 		density=(int)(Math.random()*200);
+		tconduct=(float)Math.random();
 		pourosity=(float)(Math.random());
 		
 		
@@ -216,6 +229,8 @@ public class material {
 				case "pourosity": pourosity=Float.parseFloat(data[i].substring(z+1,data[i].length()-1)); //System.out.println("   pourousity");
 				break;
 				case "density": density=Integer.parseInt(data[i].substring(z+1,data[i].length()-1)); //System.out.println("   density");
+				break;
+				case "tconduct": tconduct=Float.parseFloat(data[i].substring(z+1,data[i].length()-1)); //System.out.println("   tconduct");
 				break;
 				case "composite": if(! data[i].substring(z+1,data[i].length()-1).equals("false")) { //if not false, this is a composite
 					String[] temp = data[i].substring(z+1,data[i].length()-1).split(",");

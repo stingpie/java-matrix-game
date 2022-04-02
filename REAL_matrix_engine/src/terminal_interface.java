@@ -54,7 +54,7 @@ public class terminal_interface {
 	
 	
 	
-	public void draw_world(multi_plane display_plane) throws IOException  { // goes through each tile, and displays the associated graphic. 
+	public void draw_world(multi_plane display_plane, boolean temp_display) throws IOException  { // goes through each tile, and displays the associated graphic. 
 		
 		
 		tile[][] final_plane = display_plane.get_final_layer();
@@ -62,11 +62,33 @@ public class terminal_interface {
 		for(int x=0; x<display_plane.get_dim()[0]; x++) {
 			for(int y=0; y<display_plane.get_dim()[1]; y++) {
 				if(display_plane.get_final_layer()[x][y].visible) {
-				//System.out.print(final_layer[x][y].get_stack()[final_layer[x][y].get_stack().length-1].get_graphic());
+				
 				tGraphics.enableModifiers(SGR.BOLD);
-				char[] color = display_plane.get_final_layer()[x][y].get_stack()[0].get_material().get_RGB();
-				//System.out.println(Integer.valueOf(color[0]));
-				tGraphics.setForegroundColor(new TextColor.RGB(color[0],color[1],color[2]));
+				char[] color = matrix_engine.material_list.get_material(display_plane.get_final_layer()[x][y].get_stack()[0].get_material()).get_RGB();
+				
+				if(temp_display) {
+					int temp= display_plane.get_final_layer()[x][y].get_stack()[0].get_temp();
+					float portion= (float) (1/(1+Math.pow(Math.E,-0.01*(temp-11000))));
+					
+					
+					
+					char color_red=(char) Math.max(Math.min((color[0]*(1-portion)) +((Math.pow((temp-9900)/50,-0.12))*329    )*portion,255),0);
+					char color_blue=(char) Math.max(Math.min((color[2]*(1-portion)) +((Math.log((temp-9900)/50)*99 -161    )*portion),255),0);
+					char color_green=(char) Math.max(Math.min((color[2]*(1-portion)) +((Math.log((temp-9900)/50)*138 -300     )*portion),255),0);
+					
+					
+					tGraphics.setForegroundColor(new TextColor.RGB(color_red,color_blue,color_green));
+				}
+				else {
+					tGraphics.setForegroundColor(new TextColor.RGB(color[0],color[1],color[2]));
+				}
+				
+				
+				
+				
+				
+				
+				
 					
 				if(display_plane.get_final_layer()[x][y].get_Priority_graphic()!=0) {tGraphics.putString(x,y,String.valueOf(display_plane.get_final_layer()[x][y].get_Priority_graphic())); }
 				else {
@@ -88,7 +110,7 @@ public class terminal_interface {
 		UI_line++;
 	}
 	
-	public void clear_ui() {
+	public void clear_ui(){
 		tGraphics.setForegroundColor(new TextColor.RGB(0,0,0));
 		tGraphics.fillRectangle(new TerminalPosition(26,2), new TerminalSize(16,22) , '█');
 	}

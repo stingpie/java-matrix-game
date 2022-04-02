@@ -61,7 +61,7 @@ public class plane {
 		if(x-offset[0]>=0 & x-offset[0]<dim[0] & y-offset[1]>=0 & y-offset[1]<dim[1]) {
 			world[x+offset[0]][y+offset[1]]=new_tile;
 		}
-		System.out.println("dude, error in plane, line 55");
+		//System.out.println("dude, error in plane, line 55");
 	}
 	
 	public void resize_right(int x_rel) { // I don't really see this being useful, but I still programmed it. 
@@ -135,6 +135,11 @@ public class plane {
 		
 		for(int x=0; x<dim[0]; x++) {
 			for(int y=0; y<dim[1]; y++) {
+				//System.out.print(x);System.out.print(" ");System.out.println(y);
+				//if(world[x][y].get_stack().length>1) {
+				//	System.out.println(world[x][y].get_stack()[1]);
+				//}
+				
 				temps[x][y]= world[x][y].get_stack()[world[x][y].get_stack().length-1].get_temp(); // actually set up temps
 			}
 		}
@@ -142,7 +147,7 @@ public class plane {
 		
 		for(int x=0; x<dim[0]; x++) { // goes through each tile
 			for(int y=0; y<dim[1]; y++) {
-				world[x][y].temp_exchange(); // exchange temperatures for items within the same tile
+				world[x][y].temp_exchange(world[x][y].get_stack()); // exchange temperatures for items within the same tile
 				
 				
 				
@@ -175,7 +180,7 @@ public class plane {
 				
 				
 				
-				float temp_exchange=(float)0.2;// the speed at which temperature travels between tiles
+				float temp_exchange=(float)matrix_engine.material_list.get_material(world[x][y].get_stack()[world[x][y].get_stack().length-1].get_material()).get_tconduct();// the speed at which temperature travels between tiles
 				float loss=0;
 				for(int i=0; i<(int)(cooler_temp.length/2); i++) { // goes through the array, and distributes heat to each colder tile around
 					tile cold_tile=world[cooler_temp[i*2]][cooler_temp[(i*2)+1]]; // made this variable just for convienience. 
@@ -243,6 +248,10 @@ public class plane {
 		}
 		return running_total/(dim[0]*dim[1]);
 	}
+	
+	
+	
+	
 	
 	
 	
