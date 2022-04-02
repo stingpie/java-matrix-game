@@ -37,4 +37,10 @@
 [name: head]				//8
 [mat: 10]
 [form: 6]
+&
+[name: wall]		//9
+[mat: 1 ]
+[form: 7]
+[graphic: █]
+
 

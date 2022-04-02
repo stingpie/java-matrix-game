@@ -42,3 +42,14 @@
 [primitive_x: 15]
 [primitive_y: 15 ]
 [primitive_z:1 ]
+&
+[name: cube] // form 5
+[primitive_cone: false]
+[primitive_cylinder: false]
+[primitive_cube: true]
+[primitive_sphere: false]
+[primitive_x: 100 ]
+[primitive_y: 100 ]
+[primitive_z: 100 ]
+
+

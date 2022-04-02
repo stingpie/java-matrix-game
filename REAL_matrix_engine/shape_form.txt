@@ -47,5 +47,10 @@
 [intricate: 1]
 [cavity: 8] 
 [form: 4 ]
-
-
+&
+[name: big_cube] //7
+[spike: 8 ]
+[scale:1]
+[intricate:0]
+[cavity: 0 ]
+[form: 5 ]
